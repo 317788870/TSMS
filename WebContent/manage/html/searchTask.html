@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>任务查询</title>
+
+<link rel="stylesheet" type="text/css" href="../../static/css/base.css" />
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/easyui.css">
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/icon.css">
+<script type="text/javascript" src="../../static/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/easyui-lang-zh_CN.js"></script>
+
+<style type="text/css">
+.a {
+	text-decoration: none;
+}
+</style>
+</head>
+<body>
+	<div class="container">
+		<table id="dg">
+		</table>
+		<div id="tb" style="padding: 0 30px;">
+			<form id="conForm">
+				<div class="conditions">
+					<span class="con-span">纳税人识别号: </span>
+					<input type="text" id="payerCode" name="payerCode" style="width: 166px; height: 35px; line-height: 35px;" />
+					
+					<span class="con-span">纳税人名称: </span>
+					<input type="text" id="payerName" name="payerName"style="width: 166px; height: 35px; line-height: 35px;" />
+					<span class="con-span">税务机关: </span>
+					<input type="text" id="taxOrganId" name="taxOrganId" style="width: 166px; height: 35px; line-height: 35px;" class="easyui-combobox" value="" />
+					  
+					<span class="con-span">行业: </span> 
+					<input type="text" id="industryId" name="industryId" style="width: 166px; height: 35px; line-height: 35px;" class="easyui-combobox" value="" />
+					
+				</div>
+				<div class="conditions">
+					<span class="con-span">任务开始时间(执行): </span>
+					<input type="text" id="executeTime" name="startDate" class="easyui-datebox" style="width: 166px; height: 35px; line-height: 35px;"/>
+					 
+					<span class="con-span">任务结束时间(执行): </span>
+					<input type="text" id="recordTaskDate" name="endDate" class="easyui-datebox" style="width: 166px; height: 35px; line-height: 35px;"/> 
+					
+					<input type="submit" class="easyui-linkbutton submit-btn" iconCls="icon-search" id="searchTask" data-options="selected:true" value="查询" />
+					<input type="reset" class="easyui-linkbutton reset-btn" iconCls="icon-reload" id="resetTask" data-options="selected:true" value="重置" />
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+/**
+ *打开在父窗口中打开window
+ */
+function openTopWindow(options) {
+	options = !options ? {} : options;
+	options.width = !options.width ? 500 : options.width;
+	options.height = !options.height ? 400 : options.height;
+	options.title = !options.title ? "" : options.title;
+	parent.$("#iframe").attr("src", options.url);
+	parent.$("#topWindow").window({
+		title : options.title,
+		width : options.width,
+		height : options.height,
+		modal : true,
+		resizable : true,
+		collapsible : false,
+	});
+	
+}
+//查询，重新加载数据
+function goSearch() {
+	$('#dg').datagrid('load','../../manage/getAllSearchTaskSetvlet.json?'
+		+'payerCode='+$('#payerCode').val()
+		+'&payerName='+$('#payerName').val()
+		+'&taxOrganId='+$('#taxOrganId').combobox('getValue')
+		+'&industryId='+$('#industryId').combobox('getValue')
+		+'&executeTime='+$('#executeTime').combobox('getText')
+		+'&recordTaskDate='+$('#recordTaskDate').combobox('getText')
+	);
+}
+//详情
+function detailTask(id) {
+	openTopWindow({
+		"title":"详情",
+		"url":"../../manage/html/taskInfo.html?id="+id,
+		"width":1000,
+		"height":500
+	});
+}
+//修改
+function editTask(id) {
+	openTopWindow({
+		"title":"修改",
+		"url":"../../manage/html/editTask.html?id="+id,
+		"width":1000,
+		"height":560
+	});
+	//goSearch();
+
+}
+//删除
+function deleteTask(id) {
+	$.messager.confirm('确认', '您确认想要删除记录吗？', function(r) {
+		if (r) {
+			 $.post("../../manage/deleteTaskById.json", {
+				"id" : id
+			}, function(data) {
+				if (data.success) {
+					$.messager.alert('警告',data.msg); 
+					goSearch();
+				} else {
+					$.messager.alert('警告',data.msg); 
+				}
+			}, "json");
+		}
+	});
+	goSearch();
+}
+	
+</script>
+<script type="text/javascript">
+$(function() {
+	
+	$('#dg').datagrid({    
+	    url:'../../manage/getAllSearchTaskSetvlet.json',//请求的url
+	    title: '纳税人信息',//标题栏
+	    method: "post",//请求方式
+	    toolbar:"#tb",//将搜索框作为工具条
+	    fitColumns:true,//
+	    striped: true,//斑马线
+        emptyMsg: '未找到记录！',
+	    loadMsg:"玩命加载中...",
+	    pagination:true,//显示分页
+        collapsible: true,//可折叠
+        rownumbers:true,//显示行号
+	    columns:[[    
+	        {field:'taskName',title:'任务名称'},
+	        {field:'payerCode',title:'纳税人识别号'},
+	        {field:'payerName',title:'纳税人名称'},
+	        {field:'industryName',title:'行业'},
+	        {field:'bizScope',title:'经营范围'},
+	        {field:'executeTime',title:'执行时间'},
+	        {field:'recordTaskDate',title:'录入时间'},
+	        {field:'time',title:'超时'},
+	        {field:'cz',title:'操作',formatter: function(value,row,index){
+	        	return "<a href='javascript:detailTask("+row.id+")'>查询详情</a>&nbsp;&nbsp;"
+	        		+"<a href='javascript:deleteTask("+row.id+")'>删除</a>&nbsp;&nbsp;"
+	        		+"<a href='javascript:editTask("+row.id+")'>修改</a>";
+	        }} 
+	          
+	    ]]    
+	});  
+	//初始化加载税务机关下拉列表数据
+	$('#taxOrganId').combobox({    
+	    url:'../../manage/getTaxOrgan.json',    
+	    valueField:'id',    
+	    textField:'text'
+	}); 
+	//初始化加载行业代码下拉列表数据
+	$('#industryId').combobox({    
+	    url:'../../manage/getIndustry.json',    
+	    valueField:'id',    
+	    textField:'text'
+	}); 
+	
+	//给搜索按钮添加事件
+ 	$("#searchTask").click(function(e) {
+		e.preventDefault();
+		goSearch();
+	});
+
+	//重置
+	$("#resetTask").click(function(e) {
+		$("#payerCode").val('');
+		$("#payerName").val('');
+		$('#taxOrganId').combobox('clear')
+		$('#industryId').combobox('clear')
+		$('#executeTime').combobox('clear')
+		$('#recordTaskDate').combobox('clear')
+	});
+	
+});
+</script>
+
+</html>

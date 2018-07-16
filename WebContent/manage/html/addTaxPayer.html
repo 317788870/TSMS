@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>添加纳税人</title>
+
+<link rel="stylesheet" type="text/css" href="../../static/css/base.css">
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/easyui.css">
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/icon.css">
+<link rel="stylesheet" type="text/css" href="../../static/css/edit.css">
+<link rel="stylesheet" type="text/css" href="../../static/webuploader/webuploader.css">
+<script type="text/javascript" src="../../static/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../static/js/calendar.js"></script>
+
+</head>
+<body>
+	<div class="container">
+		<div class="content">
+			<form id="addForm" method="post">
+				<div title="纳税人信息" data-options="closable:false" class="basic-info">
+					<div class="column">
+						<span class="current">添加纳税人信息</span>
+					</div>
+
+					<table class="kv-table" id="addPayer">
+						<tbody>
+								<tr>
+								<td class="kv-label">纳税人识别号</td>
+								<td class="kv-content">
+									<input type="text" name="payerCode" id="payerCode"  class="easyui-validatebox" data-options="required:true" placeholder="纳税人识别号">
+									<label id="code"></label>
+								</td>
+								<td class="kv-label">纳税人名称</td>
+								<td class="kv-content">
+									<input type="text" name="payerName" id="payerName" class="easyui-validatebox" data-options="required:true" placeholder="纳税人名称">
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">生产经营地址</td>
+								<td class="kv-content">
+									<input type="text" name="bizAddress" id="bizAddress" class="easyui-validatebox" data-options="required:true" placeholder="生产经营地址">
+								</td>
+								<td class="kv-label">生成经营地电话</td>
+								<td class="kv-content">
+									<input type="text" name="bizAddressPhone" id="bizAddressPhone"  placeholder="生产经营地电话">
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">所属税务机关</td>
+								<td class="kv-content">
+									<input id="taxOrganId" name="taxOrganId" class="easyui-combobox" style="width: 210px; height: 35px; line-height: 35px;" value="请选择税务机关"> 
+								</td>
+								<td class="kv-label">行业</td>
+								<td class="kv-content">
+									<input id="industryId" name="industryId" class="easyui-combobox" style="width: 210px; height: 35px; line-height: 35px;" value="请选择行业"> 
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">生产经营范围</td>
+								<td class="kv-content">
+									<input type="text" name="bizScope" id="bizScope" placeholder="生产经营范围">
+								</td>
+								<td class="kv-label">票种核定</td>
+								<td class="kv-content">
+									<select name="invoiceType" id="invoiceType">
+										<option value="-1">请选择发票种类</option>
+										<option value="增值税普通发票">增值税普通发票</option>
+										<option value="增值税专用发票">增值税专用发票</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">法人代表人</td>
+								<td class="kv-content">
+									<input type="text" name="legalPerson" id="legalPerson" placeholder="法人姓名">
+								</td>
+								<td class="kv-label">法人身份证号</td>
+								<td class="kv-content">
+									<input type="text" name="legalIdCard" id="legalIdCard" placeholder="法人代表身份证号码">
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">主管财务</td>
+								<td class="kv-content">
+									<input type="text" name="finaceName" id="finaceName" placeholder="主管财务">
+								</td>
+								<td class="kv-label">财务身份证号</td>
+								<td class="kv-content">
+									<input type="text" name="finaceIdCard" id="finaceIdCard" placeholder="财务身份证号">
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">录入人员</td>
+								<td class="kv-content"><label id="taxerName"></label></td>
+								<td class="kv-label">当前时间</td>
+								<td class="kv-content"><label id=recordDate></label></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="btn-selection">
+					<input type="submit" class="easyui-linkbutton submit-btn" id="savePayer" data-options="selected:true">
+					<input type="reset" class="easyui-linkbutton reset-btn" id="reset" data-options="selected:true">
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+$(function() {
+	//初始化加载税务机关下拉列表数据
+	$('#taxOrganId').combobox({    
+	    url:'../../manage/getTaxOrgan.json',    
+	    valueField:'id',    
+	    textField:'text'
+	}); 
+	//初始化加载行业代码下拉列表数据
+	$('#industryId').combobox({    
+	    url:'../../manage/getIndustry.json',    
+	    valueField:'id',    
+	    textField:'text'
+	}); 
+	var d = new Date();
+	$("#recordDate").html(d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate());
+	$.post(
+		"../../manage/getTaxerName.json",
+		function(data) {
+			$("#taxerName").html(data.taxerName);
+		},
+		"json"
+	);
+	$("#payerCode").blur(function(e) {
+		$.post(
+			"../../manage/getTaxPayerCodes.json",
+			{"payerCode":$("#payerCode").val()},
+			function(data) {
+				var label = $("#code");
+				if (data.success) {
+					label.html(data.msg);
+					label.css("color","green");
+				} else {
+					label.html(data.msg);
+					label.css("color","red");
+				}
+			},
+			"json"
+		);
+	});
+	//提交添加表单
+	$("#savePayer").click(function(e) {
+		e.preventDefault();//阻止默认提交方式
+		$.post(
+			"../../manage/addTaxPayer.json",
+			$("#addForm").serialize(),//将表单的数据序列化
+			function(data, textStatus, req) {
+				if (data.success) {
+					$.messager.alert({
+	           			title:"提示",
+	           			msg:data.msg
+			        });
+				} else {
+					$.messager.alert({
+	           			title:"提示",
+	           			msg:data.msg
+			        });
+				}
+			},
+			"json"
+		);
+	});
+});
+</script>
+</html>
+

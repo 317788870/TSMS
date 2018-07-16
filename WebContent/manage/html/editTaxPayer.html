@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>修改纳税人</title>
+
+<link rel="stylesheet" type="text/css" href="../../static/css/base.css">
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/easyui.css">
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/icon.css">
+<link rel="stylesheet" type="text/css" href="../../static/css/edit.css" >
+<script type="text/javascript" src="../../static/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../static/js/calendar.js"></script>
+
+</head>
+<body>
+	<div class="container">
+		<div class="content">
+			<form id="editForm" method="post">
+				<div title="纳税人信息" data-options="closable:false" class="basic-info">
+					<div class="column">
+						<span class="current">修改纳税人信息</span>
+					</div>
+
+					<input name="id" id="id" type="hidden">
+					<table class="kv-table">
+						<tbody>
+							<tr>
+								<td class="kv-label">纳税人识别号</td>
+								<td class="kv-content">
+									<input type="text" name="payerCode" id="payerCode" readonly placeholder="纳税人识别号">
+								</td>
+								<td class="kv-label">纳税人名称</td>
+								<td class="kv-content">
+									<input type="text" name="payerName" id="payerName" class="easyui-validatebox" data-options="required:true" placeholder="纳税人名称">
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">生产经营地址</td>
+								<td class="kv-content">
+									<input type="text" name="bizAddress" id="bizAddress" class="easyui-validatebox" data-options="required:true" placeholder="生产经营地址">
+								</td>
+								<td class="kv-label">生成经营地电话</td>
+								<td class="kv-content">
+									<input type="text" name="bizAddressPhone" id="bizAddressPhone"  placeholder="生产经营地电话">
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">所属税务机关</td>
+								<td class="kv-content">
+									<input id="taxOrganId" class="easyui-combobox" name="taxOrganId" value="请选择税务机关"> 
+								</td>
+								<td class="kv-label">行业</td>
+								<td class="kv-content">
+									<input id="industryId" class="easyui-combobox" name="industryId" value="请选择行业"> 
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">生产经营范围</td>
+								<td class="kv-content">
+									<input type="text" name="bizScope" id="bizScope" placeholder="生产经营范围">
+								</td>
+								<td class="kv-label">票种核定</td>
+								<td class="kv-content">
+									<select name="invoiceType" id="invoiceType">
+										<option value="-1">请选择发票种类</option>
+										<option value="增值税普通发票">增值税普通发票</option>
+										<option value="增值税专用发票">增值税专用发票</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">法人代表人</td>
+								<td class="kv-content">
+									<input type="text" name="legalPerson" id="legalPerson" placeholder="法人姓名">
+								</td>
+								<td class="kv-label">法人身份证号</td>
+								<td class="kv-content">
+									<input type="text" name="legalIdCard" id="legalIdCard" placeholder="法人代表身份证号码">
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">主管财务</td>
+								<td class="kv-content">
+									<input type="text" name="finaceName" id="finaceName" placeholder="主管财务">
+								</td>
+								<td class="kv-label">财务身份证号</td>
+								<td class="kv-content">
+									<input type="text" name="finaceIdCard" id="finaceIdCard" placeholder="财务身份证号">
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">办税人员</td>
+								<td class="kv-content"><label id="taxerName"></label></td>
+								<td class="kv-label">录入日期</td>
+								<td class="kv-content"><label id=recordDate></label></td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>
+				<div class="btn-selection">
+					<input type="submit" class="easyui-linkbutton submit-btn"
+						id="editPayer" data-options="selected:true" value="修改"> <input
+						type="reset" class="easyui-linkbutton reset-btn" id="reset"
+						data-options="selected:true">
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+
+
+<script type="text/javascript">
+
+$("input[name=executeTime]").datebox({
+    formatter: easyUIFormater,
+    parser: easyUIparser
+}); 
+String.prototype.getParameter = function (key) {  
+	var re = new RegExp(key + '=([^&]*)(?:&)?');  
+	return this.match(re) && this.match(re)[1];  
+}; 
+//  获取url值 key的值  
+function getParamterByKey(key) {
+   return location.href.getParameter(key); 
+}
+$(function(){
+	$.post(
+		"../../manage/getTaxPayerInfo.json",
+		{"id" : getParamterByKey("id")}, 
+		function(data) {
+			if (data.success) {
+				$("#id").val(data.rows[0].id );
+				$("#payerCode").val(data.rows[0].payerCode );
+				$("#payerName").val(data.rows[0].payerName );
+				$("#bizAddress").val(data.rows[0].bizAddress );
+				$("#bizAddressPhone").val(data.rows[0].bizAddressPhone );
+				
+	  				getDefault("taxOrganId",data.rows[0].organName);//默认值从更新的对象中取
+	  				getDefault("industryId",data.rows[0].industryName);//默认值从更新的对象中取
+	  				
+				$("#bizScope").val(data.rows[0].bizScope );
+				$("#invoiceType").val(data.rows[0].invoiceType );
+				$("#legalPerson").val(data.rows[0].legalPerson );
+				$("#legalIdCard").val(data.rows[0].legalIdCard );
+				$("#finaceName").val(data.rows[0].finaceName );
+				$("#finaceIdCard").val(data.rows[0].finaceIdCard );
+				$("#taxerName").text(data.rows[0].taxerName );
+				$("#recordDate").text(data.rows[0].recordDate );
+			}
+		},
+		"json"
+	);
+	//初始化加载下拉列表数据
+	$('#taxOrganId').combobox({    
+	    url:'../../manage/getTaxOrgan.json',    
+	    valueField:'id',    
+	    textField:'text'
+	}); 
+	$('#industryId').combobox({    
+	    url:'../../manage/getIndustry.json',    
+	    valueField:'id',    
+	    textField:'text'
+	}); 
+
+	//修改提交表单
+	$("#editPayer").click(function(e) {
+		e.preventDefault();//阻止默认提交方式
+		$.post(
+			"../../manage/editTaxPayer.json",
+			$("#editForm").serialize(),//将表单的数据序列化
+			function(data, textStatus, req) {
+				if (data.success) {
+					$.messager.alert({
+	           			title:"提示",
+	           			msg:data.msg
+			        });
+				} else {
+					$.messager.alert({
+	           			title:"提示",
+	           			msg:data.msg
+			        });
+				}
+			},
+			"json"
+		);
+	});
+	$("#reset").on("click",function(){
+		$("#editForm").form("reset")
+	})
+	
+});
+
+//获取选中下拉列表的id
+function getSelected2(id) {
+	$('#'+id).combobox({  
+	    onChange:function(newValue,oldValue){  
+	    	return newValue;
+	    }  
+	}); 
+}
+
+   //初始化下拉列表默认值
+function getDefault(id, value) {//id 为combobox的id，value为默认值
+	$("#" + id).combobox({
+		onLoadSuccess : function() { //数据加载完毕事件
+			var data = $("#" + id).combobox('getData');
+			if (data.length > 0) {
+				if (value != null && value != "") {
+					for (var i = 0; i < data.length; i++) {
+						var v = data[i].id;
+						var organName = data[i].text;
+						if (organName==value) { 
+							$('#'+id).combobox('setValue',v);//一定要先value后text,否则text与value值会相同全为value值  
+							$('#'+id).combobox('setText', organName); 
+						}
+					}
+				}
+			}
+		}
+	});
+}
+    
+</script>
+</html>

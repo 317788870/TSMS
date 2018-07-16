@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>纳税人管理</title>
+
+<link rel="stylesheet" type="text/css" href="../../static/css/base.css" />
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/easyui.css">
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/icon.css">
+<link rel="stylesheet" type="text/css" href="../../static/css/taxpayer.css">
+<script type="text/javascript" src="../../static/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/easyui-lang-zh_CN.js"></script>
+
+</head>
+<body>
+	<div class="container">
+		<table id="dg">
+		</table>
+		<div id="tb" style="padding: 0 30px;">
+			纳税人识别号: <input type="text" name="payerCode" id="payerCode" style="width: 166px; height: 35px; line-height: 35px;" />
+			 纳税人名称: <input type="text" name="payerName" id="payerName" style="width: 166px; height: 35px; line-height: 35px;" /> 
+			<a href="javascript:void(0);" id="searchBtn" class="easyui-linkbutton" iconCls="icon-search">查询</a> 
+			<a href="javascript:void(0);" id="resetBtn" class="easyui-linkbutton" iconCls="icon-reload">重置</a>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+$(function() {
+	$('#dg').datagrid({    
+	    title: '纳税人信息列表',
+	    url:'../../manage/getlistTaxPayerServlet.json?type=noResearch',//请求的url
+	    method: "post",
+	    toolbar:"#tb",//将搜索框作为工具条
+	    fitColumns:true,//
+	    striped: true,//斑马线
+        emptyMsg: '未找到记录！',
+	    loadMsg:"玩命加载中...",
+	    pagination:true,//显示分页
+        collapsible: true,//可折叠
+        rownumbers:true,//显示行号
+	    columns:[[    
+	        {field:'payerCode',title:'纳税识别号',align:'center'},    
+	        {field:'payerName',title:'纳税人名称',align:'center'},    
+	        {field:'organName',title:'所属税务机关',align:'center'},    
+	        {field:'industryName',title:'所属行业',align:'center'},    
+	        {field:'legalPerson',title:'法人代表',align:'center'},    
+	        {field:'legalIdCard',title:'法人身份证号',align:'center'},    
+	        {field:'finaceName',title:'主管财务',align:'center'},    
+	        {field:'finaceIdCard',title:'财务身份证号',align:'center'},
+	        {field:'recordDate',title:'录入日期',align:'center'}
+	        
+	    ]]    
+	});
+});
+function goSearch() {
+	$('#dg').datagrid('load','../../manage/getlistTaxPayerServlet.json?type=noResearch'
+		+'&payerCode='+$('#payerCode').val()
+		+'&payerName='+$('#payerName').val()
+	);
+}
+//给搜索按钮添加事件
+$("#searchBtn").click(function(e) {
+	goSearch();
+});
+//重置
+$("#resetBtn").click(function(e) {
+	$("#payerCode").val('');
+	$("#payerName").val('');
+});
+</script>
+</html>
+

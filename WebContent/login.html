@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>河南省税务管理系统</title>
+
+<link rel="stylesheet" type="text/css" href="static/css/base.css" />
+<link rel="stylesheet" type="text/css" href="static/css/login/login.css" />
+<link rel="stylesheet" type="text/css" href="static/easyui/uimaker/easyui.css" />
+<script type="text/javascript" src="static/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="static/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="static/easyui/easyui-lang-zh_CN.js"></script>
+
+<style type="text/css">
+#error {
+	display: none;
+}
+</style>
+<script type="text/javascript">
+$(function() {
+	$("#captchaImg").click(function() {
+		this.src = "Kaptcha.jpg?num"+ Math.random();
+	});
+	var userName = document.cookie.split("=")[1];
+	$("#userName").val(userName);
+	$("#error").hide();
+	$("#form").keypress(function(e) {
+		if (e.keyCode=="13") {
+			login();
+		}
+	});
+	$(".supplier").click(function() {
+		login();
+	});
+	function login() {
+		var userName=$("#userName").val();
+		var password=$("#password").val();
+		var captcha=$("#captcha").val();
+		var remeberUser=$("#rem").val();
+		if (!userName || userName.length < 6) {
+			$("#error").show();
+			$("#info").text("账号输入有误！").css("color","red");
+			return;
+		}else{
+			$("#info").text("");
+		}
+		
+		if (!captcha || captcha.length!=4) {
+			$("#error").show();
+			$("#info").text("验证码有误！").css("color","red");
+			return;
+		}else{
+			$("#error").hide();
+			$("#info").text("");
+		}
+		$.post(
+			"UserLogin.do", 
+			{"userName":userName,"password":password,"captcha":captcha,"remeberUser":remeberUser},
+			function(data) {
+				if (data.success) {
+					document.location.href="manage/html/index.html";
+				} else {
+					$("#error").show();
+					$("#info").text(data.msg).css("color","red");
+				}
+			},
+		 	"json"
+		);
+		
+	}
+})
+</script>
+</head>
+<body>
+	<div class="login-hd">
+		<div class="left-bg"></div>
+		<div class="right-bg"></div>
+		<div class="hd-inner">
+			<span class="sys-name">xx省国税税源信息管理系统</span>
+		</div>
+	</div>
+	
+	<div class="login-bd">
+		<div class="bd-inner">
+			<div class="inner-wrap">
+				<div class="lg-poster"></div>
+				<div class="lg-zone">
+					<div class="lg-box">
+						<div class="lg-label">
+						<h4>用户登录</h4>
+					</div>
+					<div id="error" class="alert alert-error">
+						<i class="iconfont">&#xe62e;</i> <span id="info">请输入用户名</span>
+					</div>
+					<form method="post" id="form">
+						<div class="lg-username input-item clearfix">
+							<i class="iconfont">&#xe60d;</i> <input type="text"
+								name="userName" id="userName" placeholder="系统账号" re>
+						</div>
+						<div class="lg-password input-item clearfix">
+							<i class="iconfont">&#xe634;</i> <input type="password"
+								name="password" id="password" placeholder="系统密码">
+						</div>
+						<div class="lg-check clearfix">
+							<div class="input-item">
+								<i class="iconfont">&#xe633;</i> <input type="text"
+									name="captcha" id="captcha" placeholder="验证码">
+							</div>
+							<span class="check-code"><img id="captchaImg"
+								src="Kaptcha.jpg"></span>
+						</div>
+						<div class="tips clearfix">
+							<label>
+								<input type="checkbox" id="rem" name="remUser" checked="checked">记住用户名
+							</label>
+							<a href="javascript:;"	class="forget-pwd">忘记密码？</a>
+						</div>
+						<div class="enter">
+							<a href="javascript:void(0);" class="supplier">登录</a>
+							<a href="javascript:void(0);" class="purchaser">重置</a>
+						</div>
+					</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

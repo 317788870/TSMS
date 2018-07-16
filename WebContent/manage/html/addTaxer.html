@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>添加办税专员</title>
+
+<link rel="stylesheet" type="text/css" href="../../static/css/base.css">
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/easyui.css">
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/icon.css">
+<link rel="stylesheet" type="text/css" href="../../static/css/edit.css">
+<script type="text/javascript" src="../../static/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../static/js/calendar.js"></script>
+</head>
+
+<body>
+	<div class="container">
+		<div class="content">
+			<form id="addForm" method="post">
+				<div title="办税专员信息" data-options="closable:false" class="basic-info">
+					<div class="column">
+						<span class="current">添加办税专员信息</span>
+					</div>
+					<table class="kv-table" id="addPayer">
+						<tbody>
+							<tr>
+								<td class="kv-label">办税专员编号</td>
+								<td class="kv-content">
+									<input type="text" id="taxerCode" name="taxerCode" class="easyui-validatebox" data-options="required:true" placeholder="办税专员编号" />
+								</td>
+								<td class="kv-label">办税专员名称</td>
+								<td class="kv-content">
+									<input type="text" id="taxerName" name="taxerName" class="easyui-validatebox" data-options="required:true" placeholder="办税专员名称" />
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">手机号</td>
+								<td class="kv-content">
+									<input type="text" id="mobile" name="mobile" class="easyui-validatebox" data-options="required:true" placeholder="手机号" />
+								</td>
+								<td class="kv-label">地址</td>
+								<td class="kv-content">
+									<input type="text" id="address" name="address" placeholder="地址" />
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">性别</td>
+								<td class="kv-content">
+									<input type="radio" name="sex" placeholder="男" checked value="男" />男 
+									<input type="radio" name="sex" placeholder="女" value="女" />女
+								</td>
+								<td class="kv-label">生日</td>
+								<td class="kv-content">
+									<input type="text" id="birthday" name="birthday" placeholder="生日">
+								</td>
+							</tr>
+							<tr>
+								<td class="kv-label">Email</td>
+								<td class="kv-content">
+									<input type="text" id="email" name="email" placeholder="Email" />
+								</td>
+								<td class="kv-label">所属税务机关</td>
+								<td class="kv-content">
+									<input id="taxOrganId" name="taxOrganId" class="easyui-combobox" data-options="required:true" style="width: 210px; height: 35px; line-height: 35px;" value="请选择税务机关" />
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="btn-selection">
+					<input type="submit" class="easyui-linkbutton submit-btn" id="savePayer" data-options="selected:true" value="保存" />
+					<input type="reset" class="easyui-linkbutton reset-btn" id="reset" data-options="selected:true" />
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+$("input[name=birthday]").datebox({
+    formatter: easyUIFormater,
+    parser: easyUIparser
+});
+$(function() {
+	//初始化加载税务机关下拉列表数据
+	$('#taxOrganId').combobox({    
+	    url:'../../manage/getTaxOrgan.json',    
+	    valueField:'id',    
+	    textField:'text'
+	});
+	//提交添加表单
+	$("#savePayer").click(function(e) {
+		e.preventDefault();//阻止默认提交方式
+		$.post(
+			"../../manage/updateTaxer.json?type=add",
+			$("#addForm").serialize(),//将表单的数据序列化
+			function(data, textStatus, req) {
+				if (data.success) {
+					$.messager.alert({
+	           			title:"提示",
+	           			msg:data.msg
+			        });
+				} else {
+					$.messager.alert({
+	           			title:"提示",
+	           			msg:data.msg
+			        });
+				}
+			},
+			"json"
+		);
+	});
+})
+</script>
+
+</html>

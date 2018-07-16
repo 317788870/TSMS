@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>纳税人管理</title>
+
+<link rel="stylesheet" type="text/css" href="../../static/css/base.css">
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/easyui.css">
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/icon.css">
+<link rel="stylesheet" type="text/css" href="../../static/css/taxpayer.css">
+<script type="text/javascript" src="../../static/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/easyui-lang-zh_CN.js"></script>
+
+<style type="text/css">
+a{
+	text-decoration: none;
+}
+</style>
+
+
+
+</head>
+<body>
+	<div class="container">
+		<table id="dg">
+		</table>
+		<div id="tb" style="padding: 0 30px;">
+			纳税人识别号: <input type="text" name="payerCode" id="payerCode" style="width: 166px; height: 35px; line-height: 35px;" /> 
+			纳税人名称: <input type="text" name="payerName" id="payerName" style="width: 166px; height: 35px; line-height: 35px;" />
+			<a href="javascript:void(0);" id="searchBtn" class="easyui-linkbutton" iconCls="icon-search" data-options="selected:true">查询</a> 
+			<a href="javascript:void(0);" id="setBtn" class="easyui-linkbutton" iconCls="icon-reload">重置</a>
+			<a href="javascript:void(0);" id="addBtn" class="easyui-linkbutton" iconCls="icon-add">添加纳税人</a>
+		</div>
+	</div>
+
+<script type="text/javascript">
+/**
+ *打开在父窗口中打开window
+ */
+function openTopWindow(options){
+    options = !options ? {} :options;
+    options.width = !options.width ? 500 : options.width;
+    options.height = !options.height ? 400 : options.height;
+    options.url = !options.url ? "404.html" : options.url;
+    options.title = !options.title ? "" : options.title;
+
+    parent.$("#topWindow").window({
+        title : options.title,
+        width: options.width,
+        height: options.height,
+        content : "<iframe scrolling='no' frameborder='0' border='0' height='100%' width='100%' src='"+options.url+"'></iframe>",
+        modal:true,
+        resizable:true,
+        collapsible:false
+    });
+}
+   
+//查询，重新加载数据
+function goSearch() {
+	$("#dg").datagrid("load", {
+		"payerCode" : $("#payerCode").val(),
+		"payerName" : $("#payerName").val()
+	});
+}
+//详情
+function detail(id) {
+	openTopWindow({
+		"title":"详情",
+		"url":"../../manage/html/payerInfo.html?id="+id,
+		"width":750,
+		"height":400
+	});
+}
+//删除
+function removeTaxPayer(id) {
+	$.messager.confirm('确认', '您确认想要删除记录吗？', function(r) {
+		if (r) {
+			$.post("../../manage/deletePayerById.json", {
+				"id" : id
+			}, function(data) {
+				if (data.success) {
+					$.messager.alert('警告',data.msg);
+					goSearch();
+				} else {
+					$.messager.alert('警告',data.msg); 
+				}
+			}, "json");
+		}
+	});
+	goSearch();
+}
+
+//修改
+function edit(id) {
+	openTopWindow({
+		"title":"修改",
+		"url":"../../manage/html/editTaxPayer.html?id="+id,
+		"width":900,
+		"height":500
+	});
+	goSearch();
+}
+//添加任务
+function addTask(id) {
+	parent.addTab("调查任务录入","../../manage/html/addTask.html?id="+id);
+	goSearch();
+}
+function addTaxPayer() {
+	openTopWindow({
+		"title":"新增纳税人",
+		"url":"../../manage/html/addTaxPayer.html",
+		"width":850,
+		"height":500
+	});
+	goSearch();
+}
+</script>
+
+
+<script type="text/javascript">
+$(function() {
+	
+	$('#dg').datagrid({    
+	    title: '纳税人信息列表',
+	    url:'../../manage/getlistTaxPayerServlet.json?type=list',//请求的url
+	    method: "post",
+	    toolbar:"#tb",//将搜索框作为工具条
+	    fitColumns:true,//
+	    striped: true,//斑马线
+        emptyMsg: '未找到记录！',
+	    loadMsg:"玩命加载中...",
+	    pagination:true,//显示分页
+        collapsible: true,//可折叠
+        rownumbers:true,//显示行号
+        
+	    columns:[[    
+	        {field:'payerCode',title:'纳税识别号',align:'center'},    
+	        {field:'payerName',title:'纳税人名称',align:'center'},    
+	        {field:'organName',title:'所属税务机关',align:'center'},    
+	        {field:'bizScope',title:'所属行业',align:'center'},    
+	        {field:'legalPerson',title:'法人代表',align:'center'},    
+	        {field:'legalIdCard',title:'法人身份证号',align:'center'},    
+	        {field:'finaceName',title:'主管财务',align:'center'},    
+	        {field:'finaceIdCard',title:'财务身份证号',align:'center'},
+	        {field:'recordDate',title:'录入日期',align:'center'},
+	        {field:'cz',title:'操作',align:'center',formatter:function(value,row,index){
+	        	return "<a href='javascript:detail("+row.id+")'>详情</a>&nbsp;"+
+	        	"<a href='javascript:edit("+row.id+")'>修改</a>&nbsp;"+
+	        	"<a href='javascript:removeTaxPayer("+row.id+")'>删除</a>&nbsp;"+
+	        	"<a href='javascript:addTask("+row.id+")'>添加任务</a>";
+	        }}
+	    ]]    
+	});
+	$("#searchBtn").click(function(e) {
+		goSearch();
+	});
+	$("#setBtn").click(function(e) {
+		$("#payerCode").val('');
+		$("#payerName").val('');
+	});
+	$("#addBtn").click(function(e) {
+		addTaxPayer();
+	});
+
+});
+
+
+</script>
+	
+
+
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>任务录入</title>
+	<link rel="stylesheet" type="text/css" href="../../static/css/base.css" >
+	<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/icon.css">
+	<link rel="stylesheet" type="text/css" href="../../static/css/edit.css">
+	<script type="text/javascript" src="../../static/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="../../static/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../static/easyui/easyui-lang-zh_CN.js"></script>
+</head>
+<style>
+	input{
+		readonly:true
+	}  
+</style>
+<body>
+<div class="container">
+	<div class="content">
+		<div title="纳税人信息" data-options="closable:false" class="basic-info">
+			<div class="column"><span class="current">用户基本信息</span></div>
+			<table class="kv-table">
+				<tr>
+				    <td class="kv-label">用户员工编号</td>
+				    <td class="kv-content"><label id="taxerId"></label></td>
+				    <td class="kv-label">用户权限</td>
+				    <td class="kv-content"><label id="permissionId"></label></td>
+				    <td class="kv-label">用户状态</td>
+				    <td class="kv-content"><label id="state"></label></td>
+				</tr>
+				<tr>
+				    <td class="kv-label">税务人员工号</td>
+				    <td class="kv-content"><label id="taxerCode"></label></td>
+				    <td class="kv-label">税务人员名称</td>
+				    <td class="kv-content"><label id="taxerName"></label></td>
+				    <td class="kv-label">税务人员电话</td>
+				    <td class="kv-content"><label id="mobile"></label></td>
+				</tr>
+				<tr>
+				    <td class="kv-label">地址</td>
+				    <td class="kv-content"><label id="address"></label></td>
+				    <td class="kv-label">性别</td>
+				    <td class="kv-content"><label id="sex"></label></td>
+				    <td class="kv-label">出生日期</td>
+				    <td class="kv-content"><label id="birthday"></label></td>
+				</tr>
+				<tr>
+				    <td class="kv-label">邮箱</td>
+				    <td class="kv-content"><label id="email"></label></td>
+				    <td class="kv-label">税务机关</td>
+				    <td class="kv-content"><label id="organId"></label></td>
+				    <td class="kv-label">税务状态</td>
+				    <td class="kv-content"><label id="state1"></label></td>
+				</tr>
+				<tr>
+				    <td class="kv-label">上级主管</td>
+				    <td class="kv-content"><label id="mgr"></label></td>
+				    <td class="kv-label">系统管理员标志</td>
+				    <td class="kv-content"><label id="admin"></label></td>
+				    <td class="kv-label">记录日期</td>
+				    <td class="kv-content"><label id="recordDate"></label></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+String.prototype.getParameter = function (key) {  
+    var re = new RegExp(key + '=([^&]*)(?:&)?');  
+    return this.match(re) && this.match(re)[1];  
+}; 
+//  获取url值 key的值  
+function getParamterByKey(key) {
+   return location.href.getParameter(key); 
+}
+$(function() {
+	$.post(
+		"../../manage/getUserInfo.json", 
+		function(data) {
+			if (data.success) {
+				$("#taxerId").text(data.rows[0].taxerId);
+				$("#permissionId").text(data.rows[0].permissionId);
+				$("#state").text(data.rows[0].state);
+				$("#taxerCode").text(data.rows[0].taxerCode);
+				$("#taxerName").text(data.rows[0].taxerName);
+				$("#mobile").text(data.rows[0].mobile);
+				$("#address").text(data.rows[0].address);
+				$("#sex").text(data.rows[0].sex);
+				$("#birthday").text(data.rows[0].birthday);
+				$("#email").text(data.rows[0].email);
+				$("#organId").text(data.rows[0].organId);
+				$("#state1").text(data.rows[0].state1);
+				$("#mgr").text(data.rows[0].mgr);
+				$("#admin").text(data.rows[0].admin);
+				$("#recordDate").text(data.rows[0].recordDate);
+			}
+		},
+		"json"
+	);
+})
+</script>
+</html>

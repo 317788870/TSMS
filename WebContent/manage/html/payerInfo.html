@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>修改纳税人</title>
+
+<link rel="stylesheet" type="text/css" href="../../static/css/base.css">
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/easyui.css">
+<link rel="stylesheet" type="text/css" href="../../static/easyui/uimaker/icon.css">
+<link rel="stylesheet" type="text/css" href="../../static/css/edit.css">
+<script type="text/javascript" src="../../static/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../static/easyui/easyui-lang-zh_CN.js"></script>
+
+</head>
+<body>
+	<div class="container">
+		<div class="content">
+			<div title="纳税人信息" class="basic-info">
+				<div class="column">
+					<span class="current">纳税人信息</span>
+				</div>
+				<form id="editForm">
+					<table class="kv-table">
+						<tbody>
+							<tr>
+								<td class="kv-label">纳税人识别号</td>
+								<td class="kv-content"><label id="payerCode"></label></td>
+								<td class="kv-label">纳税人名称</td>
+								<td class="kv-content"><label id="payerName"></label></td>
+							</tr>
+							<tr>
+								<td class="kv-label">生产经营地址</td>
+								<td class="kv-content"><label id="bizAddress"></label></td>
+								<td class="kv-label">生产经营地电话</td>
+								<td class="kv-content"><label id="bizAddressPhone"></label></td>
+							</tr>
+							<tr>
+								<td class="kv-label">所属税务机关</td>
+								<td class="kv-content"><label id="organName"></label></td>
+								<td class="kv-label">行业</td>
+								<td class="kv-content"><label id="industryName"></label></td>
+							</tr>
+							<tr>
+								<td class="kv-label">生产经营范围</td>
+								<td class="kv-content"><label id="bizScope"></label></td>
+								<td class="kv-label">票种核定</td>
+								<td class="kv-content"><label id="invoiceType"></label></td>
+							</tr>
+							<tr>
+								<td class="kv-label">法人代表人</td>
+								<td class="kv-content"><label id="legalPerson"></label></td>
+								<td class="kv-label">法人身份证号</td>
+								<td class="kv-content"><label id="legalIdCard"></label></td>
+							</tr>
+							<tr>
+								<td class="kv-label">主管财务</td>
+								<td class="kv-content"><label id="finaceName"></label></td>
+								<td class="kv-label">财务身份证号</td>
+								<td class="kv-content"><label id="finaceIdCard"></label></td>
+							</tr>
+							<tr>
+								<td class="kv-label">录入人员</td>
+								<td class="kv-content"><label id="taxerName"></label></td>
+								<td class="kv-label">录入日期</td>
+								<td class="kv-content"><label id="recordDate"></label></td>
+							</tr>
+						</tbody>
+					</table>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+String.prototype.getParameter = function (key) {  
+    var re = new RegExp(key + '=([^&]*)(?:&)?');  
+    return this.match(re) && this.match(re)[1];  
+}; 
+//  获取url值 key的值  
+function getParamterByKey(key) {
+   return location.href.getParameter(key); 
+}
+$(function() {
+	$.post(
+		"../../manage/getTaxPayerInfo.json",
+		{"id" : getParamterByKey("id")}, 
+		function(data) {
+			if (data.success) {
+				$("#payerCode").text(data.rows[0].payerCode );
+				$("#payerName").text(data.rows[0].payerName );
+				$("#bizAddress").text(data.rows[0].bizAddress );
+				$("#bizAddressPhone").text(data.rows[0].bizAddressPhone );
+				$("#organName").text(data.rows[0].organName );
+				$("#industryName").text(data.rows[0].industryName );
+				$("#bizScope").text(data.rows[0].bizScope );
+				$("#invoiceType").text(data.rows[0].invoiceType );
+				$("#legalPerson").text(data.rows[0].legalPerson );
+				$("#legalIdCard").text(data.rows[0].legalIdCard );
+				$("#finaceName").text(data.rows[0].finaceName );
+				$("#finaceIdCard").text(data.rows[0].finaceIdCard );
+				$("#taxerName").text(data.rows[0].taxerName );
+				$("#recordDate").text(data.rows[0].recordDate );
+			}
+		},
+		"json"
+	);
+})
+</script>
+
+</html>
