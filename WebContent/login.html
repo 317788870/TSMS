@@ -37,7 +37,7 @@ $(function() {
 		var password=$("#password").val();
 		var captcha=$("#captcha").val();
 		var remeberUser=$("#rem").val();
-		if (!userName || userName.length < 6) {
+		if (!userName || userName.length < 5) {
 			$("#error").show();
 			$("#info").text("账号输入有误！").css("color","red");
 			return;
