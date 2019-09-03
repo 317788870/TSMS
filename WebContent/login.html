@@ -22,6 +22,7 @@ $(function() {
 		this.src = "Kaptcha.jpg?num"+ Math.random();
 	});
 	var userName = document.cookie.split("=")[1];
+	
 	$("#userName").val(userName);
 	$("#error").hide();
 	$("#form").keypress(function(e) {
@@ -95,7 +96,7 @@ $(function() {
 					<form method="post" id="form">
 						<div class="lg-username input-item clearfix">
 							<i class="iconfont">&#xe60d;</i> <input type="text"
-								name="userName" id="userName" placeholder="系统账号" re>
+								name="userName" id="userName" placeholder="系统账号">
 						</div>
 						<div class="lg-password input-item clearfix">
 							<i class="iconfont">&#xe634;</i> <input type="password"
