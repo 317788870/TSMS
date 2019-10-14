@@ -15,6 +15,7 @@ import com.zjp.tsms.entity.User;
 import com.zjp.tsms.servlet.BaseServlet;
 import com.zjp.tsms.util.EncryptUtil;
 
+import cn.hutool.captcha.CircleCaptcha;
 import net.sf.json.JSONObject;
 
 /**
@@ -39,9 +40,9 @@ public class UserLoginServlet extends BaseServlet {
 		UserDao dao = UserDao.getInstance();
 		User user = dao.getUserByUserName(userName);
 		
-		String validateCaptcha = session.getAttribute(Constants.KAPTCHA_SESSION_KEY).toString();
-	
-		if (validateCaptcha.equalsIgnoreCase(captcha)) {
+		CircleCaptcha validate = (CircleCaptcha) session.getAttribute("captcha");
+		
+		if (validate.verify(captcha)) {
 			if (user != null) {
 				String pwd = EncryptUtil.encryptMD5(password + user.getSalt());
 				if (pwd.equals(user.getPassword())) {

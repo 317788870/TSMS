@@ -243,11 +243,12 @@ CREATE TABLE `tb_user` (
   UNIQUE KEY `email` (`email`),
   KEY `FKuser_taxerID` (`taxerId`),
   CONSTRAINT `FKuser_taxerID` FOREIGN KEY (`taxerId`) REFERENCES `tb_taxer` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of tb_user
 -- ----------------------------
-INSERT INTO `tb_user` VALUES ('1', 'zhangsan', 'd78ff0ef526543e2174540afdfea0154', '1', 'aaa', '1', '1', '986432727@qq.com');
-INSERT INTO `tb_user` VALUES ('2', 'zhangsi', 'd78ff0ef526543e2174540afdfea0154', '2', 'aaa', '2', '1', '898272727@qq.com');
-INSERT INTO `tb_user` VALUES ('3', 'zhangwu', 'd78ff0ef526543e2174540afdfea0154', '1', 'aaa', '3', '1', '283768761@qq.com');
+INSERT INTO `tb_user` VALUES ('1', 'admin', 'd78ff0ef526543e2174540afdfea0154', '1', 'aaa', '1', '1', '986432727@qq.com');
+INSERT INTO `tb_user` VALUES ('2', 'zhangsan', 'd78ff0ef526543e2174540afdfea0154', '1', 'aaa', '2', '1', '986432727@qq.com');
+INSERT INTO `tb_user` VALUES ('3', 'zhangsi', 'd78ff0ef526543e2174540afdfea0154', '2', 'aaa', '3', '1', '898272727@qq.com');
+INSERT INTO `tb_user` VALUES ('4', 'zhangwu', 'd78ff0ef526543e2174540afdfea0154', '1', 'aaa', '4', '1', '283768761@qq.com');
